@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="12" height="4" tilewidth="300" tileheight="300" nextobjectid="1">
+ <tileset firstgid="1" name="standard-300dpi" tilewidth="300" tileheight="300" tilecount="91" columns="7">
+  <image source="standard-300dpi.png" trans="ffffff" width="2100" height="3900"/>
+ </tileset>
+ <layer name="Floor" width="12" height="4">
+  <data encoding="base64">
+   BQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAABQAAAAUAAAAFAAAA
+  </data>
+ </layer>
+ <layer name="Walls" width="12" height="4">
+  <data encoding="base64">
+   AAAAAAAAAAAcAAAAAAAAABwAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsAAAAAAAAAGwAAAAAAAAAbAAAAGwAAABsAAAAAAAAAGwAAAAAAAAAbAAAAAAAAAAAAAAAaAAAAAAAAABoAAAAAAAAAAAAAABoAAAAAAAAAGgAAAAAAAAAAAAAA
+  </data>
+ </layer>
+</map>

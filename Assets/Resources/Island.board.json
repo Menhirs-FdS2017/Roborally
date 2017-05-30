@@ -1,0 +1,140 @@
+﻿{
+	"type": "board",
+	"name": "Island",
+	"size": {
+		"x": 12,
+		"y": 12
+	},
+	"walls": {
+		"north": [
+			{ "x":  6, "y":  3 },
+			{ "x":  3, "y": 12 },
+			{ "x":  5, "y": 12 },
+			{ "x":  8, "y": 12 },
+			{ "x": 10, "y": 12 }
+		],
+		"east": [
+			{ "x": 12, "y":  3 },
+			{ "x": 12, "y":  5 },
+			{ "x": 12, "y":  8 },
+			{ "x": 12, "y": 10 },
+			{ "x":  3, "y":  7 }
+		],
+		"south": [
+			{ "x":  3, "y":  1 },
+			{ "x":  5, "y":  1 },
+			{ "x":  8, "y":  1 },
+			{ "x": 10, "y":  1 },
+			{ "x":  6, "y": 10 }
+		],
+		"west": [
+			{ "x":  1, "y":  3 },
+			{ "x":  1, "y":  5 },
+			{ "x":  1, "y":  8 },
+			{ "x":  1, "y": 10 },
+			{ "x": 10, "y":  7 }
+		]
+	},
+	"gears": {
+		"cw": [
+			{ "x": 3, "y": 10 }, { "x": 10, "y": 10 }
+		],
+		"ccw": [
+			{ "x": 4, "y": 4 }, { "x": 4, "y": 9 }, { "x": 9, "y": 4 }, { "x": 9, "y": 9 }
+		]
+	},
+	"wrenchs": [
+		{ "x":  1, "y":  3 },
+		{ "x": 12, "y": 12 }
+	],
+	"equips": [
+		{ "x":  7, "y":  7 }
+	],
+	"holes": [
+		{ "x": 2, "y": 2 }, { "x": 2, "y": 3 }, { "x": 3, "y": 2 },
+		{ "x": 10, "y": 2 }, { "x": 11, "y": 3 }, { "x": 11, "y": 2 },
+		{ "x": 2, "y": 11 }, { "x": 2, "y": 10 }, { "x": 3, "y": 11 },
+		{ "x": 10, "y": 11 }, { "x": 11, "y": 10 }, { "x": 11, "y": 11 },
+		{ "x": 5, "y": 5 }, { "x": 5, "y": 6 }, { "x": 6, "y": 5 },
+		{ "x": 7, "y": 8 }, { "x": 8, "y": 7 }, { "x": 8, "y": 8 }
+	],
+	"conveyors": {
+		"normal": {
+			"straight": [
+				{"x":3,"y":4,"direction": "north"},
+				{"x":3,"y":5,"direction": "north"},
+				{"x":3,"y":6,"direction": "north"},
+				{"x":3,"y":7,"direction": "north"},
+				{"x":3,"y":8,"direction": "north"},
+				{"x":3,"y":9,"direction": "north"},
+				{"x":9,"y":5,"direction": "north"},
+				{"x":9,"y":7,"direction": "north"},
+				{"x":9,"y":8,"direction": "north"},
+
+				{"x":4,"y":10,"direction": "east"},
+				{"x":5,"y":10,"direction": "east"},
+				{"x":6,"y":10,"direction": "east"},
+				{"x":7,"y":10,"direction": "east"},
+				{"x":8,"y":10,"direction": "east"},
+				{"x":9,"y":10,"direction": "east"},
+				{"x":7,"y":6,"direction": "east"},
+				{"x":8,"y":6,"direction": "east"},
+				{"x":5,"y":4,"direction": "east"},
+				{"x":6,"y":4,"direction": "east"},
+				{"x":7,"y":4,"direction": "east"},
+				{"x":8,"y":4,"direction": "east"},
+
+				{"x":10,"y":3,"direction": "south"},
+				{"x":10,"y":4,"direction": "south"},
+				{"x":10,"y":5,"direction": "south"},
+				{"x":10,"y":6,"direction": "south"},
+				{"x":10,"y":7,"direction": "south"},
+				{"x":10,"y":8,"direction": "south"},
+				{"x":10,"y":9,"direction": "south"},
+				{"x":4,"y":5,"direction": "south"},
+				{"x":4,"y":6,"direction": "south"},
+				{"x":4,"y":8,"direction": "south"},
+
+				{"x":3,"y":3,"direction": "west"},
+				{"x":4,"y":3,"direction": "west"},
+				{"x":5,"y":3,"direction": "west"},
+				{"x":6,"y":3,"direction": "west"},
+				{"x":7,"y":3,"direction": "west"},
+				{"x":8,"y":3,"direction": "west"},
+				{"x":9,"y":3,"direction": "west"},
+				{"x":5,"y":7,"direction": "west"},
+				{"x":6,"y":7,"direction": "west"},
+				{"x":5,"y":9,"direction": "west"},
+				{"x":6,"y":9,"direction": "west"},
+				{"x":7,"y":9,"direction": "west"},
+				{"x":8,"y":9,"direction": "west"}
+			],
+			"turnCW": [
+			],
+			"turnCCW": [
+			],
+			"join": [
+			],
+			"joinCW": [
+			],
+			"joinCCW": [
+				{"x":4,"y":7,"direction": "south"},
+				{"x":9,"y":6,"direction": "north"}
+			]
+		},
+		"express": {
+			"straight": [
+			],
+			"turnCW": [
+			],
+			"turnCCW": [
+			],
+			"join": [
+			],
+			"joinCW": [
+			],
+			"joinCCW": [
+			]
+		}
+	}
+}
