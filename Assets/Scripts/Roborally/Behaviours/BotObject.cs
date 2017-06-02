@@ -9,8 +9,8 @@ public class BotObject : MonoBehaviour {
 	public Direction _facing;
 	public Bot _bot;
 	void Update () {
-		uint x = _bot._tile.Position.x;
-		uint y = _bot._tile.Position.y;
+		uint x = _bot.Tile.Position.x;
+		uint y = _bot.Tile.Position.y;
 		transform.position = _onBoard.transform.localToWorldMatrix.MultiplyPoint (new Vector3 (x - 0.5f - _onBoard._theBoard.Width / 2, 0, y - 0.5f - _onBoard._theBoard.Height / 2));
 		//_bot._board = _onBoard._theBoard;
 		//_bot._position = _onTile._element.Position;

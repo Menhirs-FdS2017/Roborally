@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player {
+public class Player : GameElement {
 	public Bot _bot;
 	public Card[] _program;
 	public Card[] _hand;

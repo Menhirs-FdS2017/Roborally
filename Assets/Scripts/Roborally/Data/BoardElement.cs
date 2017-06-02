@@ -36,16 +36,25 @@ public struct BoardPosition {
 public interface IBoardElement {}
 
 [Serializable]
-public class BoardElement
+public class BoardElement : GameElement
 {
 	[SerializeField]
 	private string _elementType;
 	public string ElementType { get { return _elementType; } set { _elementType = value; } }
-	public Bot Contained;
-	[HideInInspector] public Board Container;
 	public BoardPosition Position;
 	[EnumFlags] public Direction Walls;
 	public Direction Facing;
+
+	public Board Board {
+		get { return Container as Board; }
+		set { Container = value; }
+	}
+
+	public Bot Bot {
+		get { return Contained as Bot; }
+		set { Contained = value; }
+	}
+
 	public BoardElement () {
 		ElementType = "None";
 		Facing = Direction.North;
@@ -53,9 +62,9 @@ public class BoardElement
 	public BoardElement this[Direction direction]
 	{
 		get {
-			if (Container == null)
+			if (Board == null)
 				return null;
-			return Container [Position, direction];
+			return Board [Position, direction];
 		}
 	}
 	public void RotateCW () {
@@ -71,28 +80,26 @@ public class BoardElement
 	}
 	public virtual void Enters (Bot bot, Direction from)
 	{
-		if (Contained != null) {
-			Container [Position, from.Opposite ()].Enters (Contained, from);
+		if (Bot != null) {
+			Board [Position, from.Opposite ()].Enters (Bot, from);
 		}
-		bot._tile.Contained = null;
+		bot.Tile.Bot = null;
 		bot._position = Position;
-		bot._tile = this;
-		Contained = bot;
+		bot.Tile = this;
+		Bot = bot;
 	}
 	public bool CanEnter (Bot bot, Direction from)
 	{
-		Debug.Log ("CanEnter : " + Position.ToString () + " in: " + from);
 		if (Walls.IsSet(from))
 			return false;
-		if (Contained == null)
+		if (Bot == null)
 			return true;
-		return CanExit (Contained, from.Opposite ());
+		return CanExit (Bot, from.Opposite ());
 	}
 	public bool CanExit (Bot bot, Direction to)
 	{
-		Debug.Log ("CanExit : " + Position.ToString () + " out: " + to);
 		if (Walls.IsSet(to))
 			return false;
-		return Container[Position, to].CanEnter(Contained,to.Opposite () );
+		return Board [Position, to].CanEnter(Bot,to.Opposite () );
 	}
 }

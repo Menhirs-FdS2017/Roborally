@@ -4,55 +4,17 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class MultiDimElements
-{
-	[SerializeField]
-	public List<List<BoardElement>> datas;
-	public MultiDimElements(uint w, uint h) {
-		datas = new List<List<BoardElement>> ();
-		for (uint y = 0; y < h; y++) {
-			List<BoardElement> tmp = new List<BoardElement> ();
-			for (uint x = 0; x < w; x++) {
-				tmp.Add (null);
-			}
-			datas.Add (tmp);
-		}
-	}
-	public BoardElement this [uint y, uint x] {
-		get {
-			if ( y < 0 || y >= datas.Count)
-				return null;
-			if ( x < 0 || x >= datas[(int)y].Count)
-				return null;
-			return datas[(int)y][(int)x];
-		}
-		set {
-			if ( y < 0 || y >= datas.Count)
-				return;
-			if ( x < 0 || x >= datas[(int)y].Count)
-				return;
-			datas[(int)y][(int)x] = value;
-		}
-	}
-}
-
-[Serializable]
-public class Board {
+public class Board : GameElement {
 	[SerializeField]
 	BoardPosition gridSize;
-	[SerializeField]
-	MultiDimElements elements;
+	uint[,] Map;
 	public Board(JSONObject description) {
 		gridSize.x = (uint) description ["size"] ["x"].n;
 		gridSize.y = (uint) description ["size"] ["y"].n;
-		elements = new MultiDimElements(gridSize.x, gridSize.y);
+		Map = new uint[gridSize.y, gridSize.x];
 		for (uint y = 1; y <= gridSize.y; y++) {
 			for (uint x = 1; x <= gridSize.x; x++) {
-				BoardElement elt = new OpenFloor ();
-				elt.Position = new BoardPosition(x,y);
-				elt.Contained = null;
-				elt.Container = this;
-				elements [y - 1, x - 1] = elt;
+				Map [y - 1, x - 1] = GameElementManager.NoneID;
 			}
 		}
 		if (description.HasField ("gears")) {
@@ -61,12 +23,9 @@ public class Board {
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
 					Gear elt = new Gear (Orientation.CW);
-					elt.Position = new BoardPosition(x,y);
-					elt.Contained = null;
-					elt.Container = this;
 					if ( p.HasField("direction"))
 						elt.Facing = DirectionParser.FromString (p ["direction"].str);
-					elements [y - 1, x - 1] = elt;
+					Set (x, y, elt);
 				}
 			}
 			if (description ["gears"].HasField ("ccw")) {
@@ -74,12 +33,9 @@ public class Board {
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
 					Gear elt = new Gear (Orientation.CCW);
-					elt.Position = new BoardPosition(x,y);
-					elt.Contained = null;
-					elt.Container = this;
 					if ( p.HasField("direction"))
 						elt.Facing = DirectionParser.FromString (p ["direction"].str);
-					elements [y - 1, x - 1] = elt;
+					Set (x, y, elt);
 				}
 			}
 		}
@@ -88,12 +44,9 @@ public class Board {
 				uint x = (uint) p ["x"].n;
 				uint y = (uint) p ["y"].n;
 				Hole elt = new Hole ();
-				elt.Position = new BoardPosition(x,y);
-				elt.Contained = null;
-				elt.Container = this;
 				if ( p.HasField("direction"))
 					elt.Facing = DirectionParser.FromString (p ["direction"].str);
-				elements [y - 1, x - 1] = elt;
+				Set (x, y, elt);
 			}
 		}
 		if (description.HasField ("equips")) {
@@ -101,12 +54,9 @@ public class Board {
 				uint x = (uint) p ["x"].n;
 				uint y = (uint) p ["y"].n;
 				Equip elt = new Equip ();
-				elt.Position = new BoardPosition(x,y);
-				elt.Contained = null;
-				elt.Container = this;
 				if ( p.HasField("direction"))
 					elt.Facing = DirectionParser.FromString (p ["direction"].str);
-				elements [y - 1, x - 1] = elt;
+				Set (x, y, elt);
 			}
 		}
 		if (description.HasField ("wrenchs")) {
@@ -114,12 +64,9 @@ public class Board {
 				uint x = (uint) p ["x"].n;
 				uint y = (uint) p ["y"].n;
 				Repair elt = new Repair ();
-				elt.Position = new BoardPosition(x,y);
-				elt.Contained = null;
-				elt.Container = this;
 				if ( p.HasField("direction"))
 					elt.Facing = DirectionParser.FromString (p ["direction"].str);
-				elements [y - 1, x - 1] = elt;
+				Set (x, y, elt);
 			}
 		}
 		if (description.HasField ("conveyors")) {
@@ -129,12 +76,9 @@ public class Board {
 						uint x = (uint)p ["x"].n;
 						uint y = (uint)p ["y"].n;
 						ConveyorBeltStraight elt = new ConveyorBeltStraight ();
-						elt.Position = new BoardPosition (x, y);
-						elt.Contained = null;
-						elt.Container = this;
 						if ( p.HasField("direction"))
 							elt.Facing = DirectionParser.FromString (p ["direction"].str);
-						elements [y - 1, x - 1] = elt;
+						Set (x, y, elt);
 					}
 				}
 				if (description ["conveyors"] ["normal"].HasField ("joinCCW")) {
@@ -142,56 +86,71 @@ public class Board {
 						uint x = (uint)p ["x"].n;
 						uint y = (uint)p ["y"].n;
 						ConveyorBeltJunction elt = new ConveyorBeltJunction ();
-						elt.Position = new BoardPosition (x, y);
-						elt.Contained = null;
-						elt.Container = this;
 						if ( p.HasField("direction"))
 							elt.Facing = DirectionParser.FromString (p ["direction"].str);
-						elements [y - 1, x - 1] = elt;
+						Set (x, y, elt);
 					}
 				}
 			}
 		}
+		for (uint y = 1; y <= gridSize.y; y++) {
+			for (uint x = 1; x <= gridSize.x; x++) {
+				if (Map [y - 1, x - 1] == GameElementManager.NoneID) {
+					BoardElement elt = new OpenFloor ();
+					Set (x, y, elt);
+				}
+			}
+		}
+		//
 		if (description.HasField ("walls")) {
 			if (description ["walls"].HasField ("north")) {
 				foreach(JSONObject p in description ["walls"]["north"].list){
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
-					elements [y - 1, x - 1].Walls = elements [y - 1, x - 1].Walls | Direction.North;
+					BoardElement tmp = GameElementManager.Instance [Map [y - 1, x - 1]] as BoardElement;
+					tmp.Walls = tmp.Walls | Direction.North;
 				}
 			}
 			if (description ["walls"].HasField ("east")) {
 				foreach(JSONObject p in description ["walls"]["east"].list){
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
-					elements [y - 1, x - 1].Walls = elements [y - 1, x - 1].Walls | Direction.East;
+					BoardElement tmp = GameElementManager.Instance [Map [y - 1, x - 1]] as BoardElement;
+					tmp.Walls = tmp.Walls | Direction.East;
 				}
 			}
 			if (description ["walls"].HasField ("south")) {
 				foreach(JSONObject p in description ["walls"]["south"].list){
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
-					elements [y - 1, x - 1].Walls = elements [y - 1, x - 1].Walls | Direction.South;
+					BoardElement tmp = GameElementManager.Instance [Map [y - 1, x - 1]] as BoardElement;
+					tmp.Walls = tmp.Walls | Direction.South;
 				}
 			}
 			if (description ["walls"].HasField ("west")) {
 				foreach(JSONObject p in description ["walls"]["west"].list){
 					uint x = (uint) p ["x"].n;
 					uint y = (uint) p ["y"].n;
-					elements [y - 1, x - 1].Walls = elements [y - 1, x - 1].Walls | Direction.West;
+					BoardElement tmp = GameElementManager.Instance [Map [y - 1, x - 1]] as BoardElement;
+					tmp.Walls = tmp.Walls | Direction.West;
 				}
 			}
 		}
 	}
 	public uint Width { get { return gridSize.x; } }
 	public uint Height { get { return gridSize.y; } }
+	void Set(uint x, uint y,BoardElement tile) {
+		tile.Container = this;
+		tile.Position = new BoardPosition (x, y);
+		Map [y - 1, x - 1] = tile.ID;
+	}
 	public BoardElement this [uint y, uint x] {
 		get {
 			if ( x <= 0 || x > gridSize.x)
 				return null;
 			if ( y <= 0 || y > gridSize.y)
 				return null;
-			return elements [y-1, x-1];
+			return GameElementManager.Instance [Map [y - 1, x - 1]] as BoardElement;
 		}
 	}
 	public BoardElement this [BoardPosition position] {
@@ -200,8 +159,7 @@ public class Board {
 				return null;
 			if ( position.y <= 0 || position.y > gridSize.y)
 				return null;
-			Debug.Log (position.ToString () + " : " + elements);//elements.GetLength(0)+" "+elements.GetLength(1));
-			return elements [position.y-1, position.x-1];
+			return GameElementManager.Instance [Map [position.y - 1, position.x - 1]] as BoardElement;
 		}
 	}
 	public BoardElement this [BoardPosition position, Direction direction] {
@@ -211,33 +169,37 @@ public class Board {
 				return null;
 			if ( next.y <= 0 || next.y > gridSize.y)
 				return null;
-			return elements [next.y-1, next.x-1];
+			return GameElementManager.Instance [Map [next.y - 1, next.x - 1]] as BoardElement;
 		}
 	}
 	public void RotateCCW () {
-		MultiDimElements elts = new MultiDimElements(gridSize.x, gridSize.y);
+		BoardPosition tmps = new BoardPosition (gridSize.y, gridSize.x);
+		uint[,] old = Map;
+		Map = new uint[gridSize.x, gridSize.y];
 		for (uint y = 1; y <= gridSize.y; y++) {
 			for (uint x = 1; x <= gridSize.x; x++) {
 				uint nx = gridSize.x - y + 1;
 				uint ny = x;
-				elts [ny-1, nx-1] = elements [y-1, x-1];
-				elts [ny - 1, nx - 1].Position = new BoardPosition (nx, ny);
-				elts [ny - 1, nx - 1].RotateCCW ();
+				BoardElement tmpe = GameElementManager.Instance [old [y - 1, x - 1]] as BoardElement;
+				tmpe.RotateCCW ();
+				Set (nx, ny, tmpe);
 			}
 		}
-		elements = elts;
+		gridSize = tmps;
 	}
 	public void RotateCW () {
-		MultiDimElements elts = new MultiDimElements(gridSize.x, gridSize.y);
-		for (uint y = 1; y <= gridSize.y; y++) {
-			for (uint x = 1; x <= gridSize.x; x++) {
+		BoardPosition tmps = gridSize;
+		gridSize = new BoardPosition (gridSize.y, gridSize.x);
+		uint[,] old = Map;
+		Map = new uint[gridSize.y, gridSize.x];
+		for (uint y = 1; y <= tmps.y; y++) {
+			for (uint x = 1; x <= tmps.x; x++) {
 				uint nx = y;
-				uint ny = gridSize.x - x + 1;
-				elts [ny-1, nx-1] = elements [y-1, x-1];
-				elts [ny - 1, nx - 1].Position = new BoardPosition (nx, ny);
-				elts [ny - 1, nx - 1].RotateCW ();
+				uint ny = tmps.x - x + 1;
+				BoardElement tmpe = GameElementManager.Instance [old [y - 1, x - 1]] as BoardElement;
+				tmpe.RotateCW ();
+				Set (nx, ny, tmpe);
 			}
 		}
-		elements = elts;
 	}
 }

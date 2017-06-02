@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Card {
+public class Card : GameElement {
 	public enum Type {
 		TurnLeft,
 		TurnRight,

@@ -13,7 +13,7 @@ public class BotInspectorWindow : Editor {
 		if(GUILayout.Button("Initialize Object"))
 		{
 			myScript._bot = new Bot (myScript._onBoard._theBoard, myScript._onTile, myScript._facing);
-			myScript._onBoard._theBoard[myScript._onTile].Contained = myScript._bot;
+			myScript._onBoard._theBoard[myScript._onTile].Bot = myScript._bot;
 			EditorUtility.SetDirty (myScript);
 		}
 		if(GUILayout.Button("Rotate Left"))
